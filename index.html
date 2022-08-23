@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Techover WEB SDK</title>
+</head>
+<body>
+    <h1>Techover WEB SDK</h1>
+    <button id="togglePlay">Toggle Play</button>
+    <button id="prevSong">Prev</button>
+    <button id="nextSong">Next</button>
+
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const token = '[My access token]'; // Get your access token here: https://developer.spotify.com/documentation/web-playback-sdk/quick-start/
+            const player = new Spotify.Player({
+                name: 'Techover WEB SDK',
+                getOAuthToken: cb => { cb(token); },
+                volume: 0.5
+            });
+
+            // Ready
+            player.addListener('ready', ({ device_id }) => {
+                console.log('Ready with Device ID', device_id);
+            });
+
+            player.addListener('player_state_changed', (state => {
+                if (!state) return;
+                console.log(state);
+            }));
+
+            addErrorListeners(player)
+            addButtonEvents(player);
+            player.connect();
+        }
+
+        function addErrorListeners(player) {
+            player.addListener('not_ready', ({ device_id }) => {
+                console.log('Device ID has gone offline', device_id);
+            });
+
+            player.addListener('initialization_error', ({ message }) => {
+                console.error(message);
+            });
+
+            player.addListener('authentication_error', ({ message }) => {
+                console.error(message);
+            });
+
+            player.addListener('account_error', ({ message }) => {
+                console.error(message);
+            });
+        }
+
+        function addButtonEvents(player) {
+            document.getElementById('togglePlay').onclick = function() {
+              player.togglePlay();
+            };
+
+            document.getElementById('nextSong').onclick = function() {
+              player.nextTrack();
+            };
+
+            document.getElementById('prevSong').onclick = function() {
+              player.previousTrack();
+            };
+        }
+
+    </script>
+</body>
+</html>
